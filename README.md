@@ -1,62 +1,36 @@
-# proxy-async
+# proxy-async API
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Este projeto fornece uma API que implementa um proxy para direcionamento HTTP. A aplicação é construída usando o Quarkus, o Supersonic Subatomic Java Framework, e utiliza a extensão vertx-web-client para efetuar chamadas HTTP de forma assíncrona.
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+## Classes Principais
 
-## Running the application in dev mode
+- **ProxyResource**: Responsável por receber as requisições HTTP, construir a URL de destino e reencaminhar a requisição para o servidor de destino.
+- **WebClientProducer**: Produz uma instância do WebClient que é injetada na classe `ProxyResource`.
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
-```
+## Configuração
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+As configurações do projeto estão no arquivo `application.properties`. Você pode alterar as seguintes propriedades:
 
-## Packaging and running the application
+- `HOST_PROXY`: O host do servidor de destino. (Padrão: `seguradora.com.br`)
+- `HOST_PORT`: A porta do servidor de destino. (Padrão: `443`)
+- `LOG_LEVEL`: Define o nível de log da aplicação. (Padrão: `INFO`)
 
-The application can be packaged using:
-```shell script
-./mvnw package
-```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+## Dependências
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+As principais dependências do projeto incluem:
 
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
-```
+- quarkus-vertx
+- quarkus-resteasy-reactive
+- quarkus-reactive-routes
+- quarkus-arc
+- vertx-web-client (Versão 4.4.4)
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+## Como Executar
 
-## Creating a native executable
+1. Clone o repositório.
+2. Navegue até o diretório do projeto e execute: `./mvnw quarkus:dev`
+3. A API estará disponível na porta padrão do Quarkus (8080).
 
-You can create a native executable using: 
-```shell script
-./mvnw package -Dnative
-```
+## Contribuição
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/proxy-async-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
-
-## Related Guides
-
-- Eclipse Vert.x ([guide](https://quarkus.io/guides/vertx)): Write reactive applications with the Vert.x API
-- RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- Reactive Routes ([guide](https://quarkus.io/guides/reactive-routes)): REST framework offering the route model to define non blocking endpoints
-
-## Provided Code
-
-### RESTEasy Reactive
-
-Easily start your Reactive RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+Sinta-se à vontade para contribuir com este projeto. Abra um pull request ou crie uma issue para discussão.
