@@ -7,7 +7,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.client.HttpRequest;
 import io.vertx.ext.web.client.HttpResponse;
-import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.client.OAuth2WebClient;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -16,30 +16,23 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-
 @ApplicationScoped
 public class ProxyResource {
-
     private static final Logger logger = LoggerFactory.getLogger(ProxyResource.class);
-
     @ConfigProperty(name = "hostProxy")
     String hostProxy;
-
     @ConfigProperty(name = "hostPort")
     int hostPort;
-
     @Inject
-    WebClient client;
+    OAuth2WebClient oauth2Client;
 
     @PreDestroy
     public void clean() {
-        this.client.close();
+        this.oauth2Client.close();
     }
 
     @Route(path = "/*", order = 2)
     public void proxy(RoutingContext rc) {
-
         Future<HttpResponse<Buffer>> result = getUpstreamResponse(rc);
         if (result != null) {
             result.onSuccess(upstreamResponse -> {
@@ -54,24 +47,15 @@ public class ProxyResource {
     }
 
     private Future<HttpResponse<Buffer>> getUpstreamResponse(RoutingContext context) {
-        URI uri = URI.create(context.request().uri());
-
-        String queryString = uri.getQuery();
-        final var constructedUrl = String.format("%s:%d%s%s", hostProxy, hostPort, uri.getPath(),
-                queryString == null ? "" : "?" + queryString);
+                String constructedUrl = String.format("https://%s:%d%s", hostProxy, hostPort, context.request().uri());
         logger.info("Constructed URL: {}", constructedUrl);
 
-        HttpRequest<Buffer> request = client.request(
-                        HttpMethod.valueOf(context.request().method().name()),
-                        hostPort,
-                        hostProxy,
-                        String.format("%s?%s", uri.getPath(), uri.getQuery()))
+        HttpRequest<Buffer> request = oauth2Client.request(HttpMethod.valueOf(context.request().method().name()), hostPort, hostProxy, context.request().uri())
                 .ssl(true)
                 .putHeaders(context.request().headers())
                 .putHeader("Host", hostProxy);
 
-        request.putHeaders(context.request().headers())
-                .putHeader("Host", hostProxy);
+        request.putHeader("Authorization", "Bearer xC_FPxv-cNlFMUbGzc94z_WNrQzRyh-egs8hZZRrbQqVga0ML4Vq0Qoicem1eRA9rxrk_S1h");
 
         if (context.body() != null && !context.body().isEmpty()) {
             return request.sendBuffer(context.body().buffer());

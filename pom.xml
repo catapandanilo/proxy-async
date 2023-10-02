@@ -75,8 +75,15 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web-client</artifactId>
-      <version>4.4.4</version>
+      <version>4.4.5</version>
     </dependency>
+
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-auth-oauth2</artifactId>
+      <version>4.4.4</version> <!-- Use a versão adequada ao seu projeto -->
+    </dependency>
+
   </dependencies>
   <build>
     <plugins>
